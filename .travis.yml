@@ -1,6 +1,7 @@
 os: linux
 #dist: focal
-dist: bionic
+#dist: bionic
+dist: jammy
 
 language: minimal
 
