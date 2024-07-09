@@ -11,10 +11,7 @@ import:
 os: linux
 dist: focal
 language: ruby
-addons:
-  apt:
-    packages:
-      - ca-certificates
+
 rvm:
 - 2.7.5
 jobs:
