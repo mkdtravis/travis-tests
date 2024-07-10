@@ -8,6 +8,7 @@ import:
 - secure.yml
 - sleep.yml
 
+arch: s390x
 os: linux
 dist: focal
 language: ruby
