@@ -1,131 +1,64 @@
-os: linux
-#dist: focal
-#dist: bionic
-dist: jammy
 
-language: minimal
-
-cache:
-  directories:
-    - $HOME/.m2
-    - $HOME/.npm
-    - $HOME/.cache/pip
-
-notifications:
-  email:
-    on_success: change
-    on_failure: always
+language: ruby
+# rvm: 
+#  - 2.6.6
+env: 
+  - TEST_FLAG=TRUE
+  - TEST_FLAG=FALSE
+# separate test scenarios to separate yml files please and use build config import: https://docs.travis-ci.com/user/build-config-imports + https://blog.travis-ci.com/2019-11-11-build-config-imports
+import:
+- .java.yml
 
 jobs:
   include:
-    - name: "Python 3.9"
-      language: python
-      python: "3.9"
-      install:
-        - pip install -r requirements.txt
-      script:
-        - pytest
+  - name: Bionic Ruby 2.6.6 at jobs.include[1].rvm level
+    os: linux
+    dist: bionic
+    language: ruby
+    rvm: 2.6.6
+    script:
+      - ruby ./source/ruby_hello.rb
+    if: branch = main
+  - name: Bionic Ruby 2.7.5 at jobs.include[1].rvm level
+    os: linux
+    dist: bionic
+    language: ruby
+    rvm: 2.7.5
+    script:
+      - ruby ./source/ruby_hello.rb
+    if: branch = main
+  # testing basic conditionals
+  - name: Bionic Ruby 2.6.6 TRUE
+    os: linux
+    dist: bionic
+    language: ruby
+    #rvm: 2.6.6
+    if: (env(TEST_FLAG) = TRUE) AND branch = main
+    script:
+      - ruby ./source/ruby_hello.rb
+      - echo Test flag is ${TEST_FLAG} 
+  - name: Bionic Ruby 2.6.6 FALSE
+    os: linux
+    dist: bionic
+    language: ruby
+    #rvm: 2.6.6
+    if: (env(TEST_FLAG) = FALSE) AND branch = main
+    script:
+      - ruby ./source/ruby_hello.rb
+      - echo Test flag is ${TEST_FLAG} 
+    # add to conditionals testing running build from specific branch (+add branch), allow failure (https://docs.travis-ci.com/user/conditional-builds-stages-jobs/) 
+    # building branches - https://docs.travis-ci.com/user/customizing-the-build/#building-specific-branches
+    # please add cases for build-stages https://docs.travis-ci.com/user/build-stages/
+    # - sequence of stages
+    # - named stages
+    # ==
+    # using encrypted variables: https://docs.travis-ci.com/user/encryption-keys/ 
+    # ==
+    # create a job that does not puts out enything to cli for first 10 minutes - we expect autocancel on that
+    # ==
+    # create a job that runs for more than 50 minutes (an output to cli must be done with intervals < 10 mins) - we expect autocancel at around 50 minutes mark here
+    # ==
+    # commit messages: https://docs.travis-ci.com/user/customizing-the-build/#skipping-a-build 
+    # example: do something if commit message has specific value 'docker'
+    # if: (branch = master and type = push ) OR commit_message =~ /ship:docker/ OR env(SHIP_DOCKER) = true
 
-    - name: "Python 3.10"
-      language: python
-      python: "3.10"
-      install:
-        - pip install -r requirements.txt
-      script:
-        - pytest
-
-    - name: "Node.js 14"
-      language: node_js
-      node_js: "14"
-      install:
-        - npm install
-      script:
-        - npm test
-
-    - name: "Node.js 16"
-      language: node_js
-      node_js: "16"
-      install:
-        - npm install
-      script:
-        - npm test
-
-    - name: "Java 8"
-      language: java
-      jdk: openjdk8
-      install:
-        - mvn install
-      script:
-        - mvn test
-
-    - name: "Java 11"
-      language: java
-      jdk: openjdk11
-      install:
-        - mvn install
-      script:
-        - mvn test
-
-    - name: "Ruby 2.7"
-      language: ruby
-      rvm: 2.7
-      install:
-        - bundle install
-      script:
-        - rake test
-
-    - name: "Ruby 3.0"
-      language: ruby
-      rvm: 3.0
-      install:
-        - bundle install
-      script:
-        - rake test
-
-    - name: "PHP 7.4"
-      language: php
-      php: "7.4"
-      install:
-        - composer install
-      script:
-        - phpunit
-
-    - name: "PHP 8.0"
-      language: php
-      php: "8.0"
-      install:
-        - composer install
-      script:
-        - phpunit
-
-    - name: "Go 1.16"
-      language: go
-      go: "1.16"
-      install:
-        - go get -v ./...
-      script:
-        - go test ./...
-
-    - name: "Go 1.17"
-      language: go
-      go: "1.17"
-      install:
-        - go get -v ./...
-      script:
-        - go test ./...
-
-    - name: "Rust Stable"
-      language: rust
-      rust: stable
-      install:
-        - cargo build
-      script:
-        - cargo test
-
-    - name: "Rust Beta"
-      language: rust
-      rust: beta
-      install:
-        - cargo build
-      script:
-        - cargo test
