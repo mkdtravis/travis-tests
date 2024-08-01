@@ -3,3 +3,4 @@ include:
 - stage: "Test draft"
 if: env(TRAVIS_PULL_REQUEST_IS_DRAFT) != "true"
 script: echo $TRAVIS_PULL_REQUEST_IS_DRAFT
+#
